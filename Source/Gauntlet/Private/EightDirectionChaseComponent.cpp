@@ -1,0 +1,136 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "EightDirectionChaseComponent.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerController.h"
+#include "Engine/World.h"
+
+// Sets default values for this component's properties
+UEightDirectionChaseComponent::UEightDirectionChaseComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
+
+	// ...
+}
+
+
+// Called when the game starts
+void UEightDirectionChaseComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+float StopDistance = 100.0f;
+
+// Called every frame
+void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	UE_LOG(LogTemp, Log, TEXT("TickComponent is running"));
+
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	AActor* Owner = GetOwner();
+	if (!Owner) return;
+
+	AActor* Target = FindNearestPlayer();
+
+	if (Target) {
+		/* Old code that doesn't really work
+		FVector Dir = Get8DirectionVector(Target->GetActorLocation() - Owner->GetActorLocation());
+		FVector newLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
+		Owner->SetActorLocation(newLocation);
+		FRotator LookAtRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
+		Owner->SetActorRotation(LookAtRotation);
+
+		FVector Direction2D = Target->GetActorLocation() - Owner->GetActorLocation();
+		Direction2D.Z = 0.0f;
+
+		if (!Direction2D.IsNearlyZero())
+		{
+			FRotator LookAtRotation = Direction2D.Rotation();
+			Owner->SetActorRotation(LookAtRotation);
+		}
+		*/
+		
+		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
+		ToTarget.Z = 0.0f; // ensure 2D only
+
+		float Distance = ToTarget.Size(); // same as Size2D() after Z is zeroed
+
+		if (Distance > StopDistance)
+		{
+			FVector Dir = Get8DirectionVector(ToTarget);
+			FVector NewLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
+			FHitResult Hit;
+			Owner->SetActorLocation(NewLocation, true, &Hit);
+			//Owner->SetActorLocation(NewLocation);
+		}
+
+		if (!ToTarget.IsNearlyZero())
+		{
+			FRotator LookAtRotation = ToTarget.Rotation();
+			Owner->SetActorRotation(LookAtRotation);
+		}
+	}
+}
+
+AActor* UEightDirectionChaseComponent::FindNearestPlayer() {
+	AActor* Nearest = nullptr;
+	float ClosestDistSq = FLT_MAX;
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It) {
+		APawn* PlayerPawn = It->Get()->GetPawn();
+		if (PlayerPawn) {
+			float DistSq = FVector::DistSquared(PlayerPawn->GetActorLocation(), GetOwner()->GetActorLocation());
+			if (DistSq < ClosestDistSq) {
+				ClosestDistSq = DistSq;
+				Nearest = PlayerPawn;
+			}
+		}
+	}
+	return Nearest;
+}
+
+FVector UEightDirectionChaseComponent::Get8DirectionVector(FVector ToTarget) {
+	ToTarget.Z = 0.0f;
+
+	if (ToTarget.IsNearlyZero())
+		return FVector::ZeroVector;
+
+	ToTarget.Normalize();
+
+	// Get angle in degrees between 0 and 360
+	float Angle = FMath::RadiansToDegrees(FMath::Atan2(ToTarget.Y, ToTarget.X));
+	if (Angle < 0.0f)
+		Angle += 360.0f;
+
+	// Determine which of the 8 directions to use, angle math is weird
+	int32 Sector = FMath::FloorToInt((Angle + 22.5f) / 45.0f) % 8;
+
+	//UE_LOG(LogTemp, Warning, TEXT("Angle: %f, Sector: %d"), Angle, Sector); log used to help bug solve
+
+	FVector Directions[8] = {
+		FVector(1, 0, 0),                                // 0°   - East
+		FVector(1, 1, 0),                                // 45°  - NE
+		FVector(0, 1, 0),                                // 90°  - North
+		FVector(-1, 1, 0),                               // 135° - NW
+		FVector(-1, 0, 0),                               // 180° - West
+		FVector(-1, -1, 0),                              // 225° - SW
+		FVector(0, -1, 0),                               // 270° - South
+		FVector(1, -1, 0)                                // 315° - SE
+	};
+
+	//UE_LOG(LogTemp, Warning, TEXT("Sector: %d, Direction: %s"), Sector, *Directions[Sector].ToString()); log used to help bug solve
+
+	FVector Chosen = Directions[Sector].GetSafeNormal();
+
+	return Chosen;
+}
+
