@@ -14,4 +14,6 @@ class GAUNTLET_API AGauntletGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 };
