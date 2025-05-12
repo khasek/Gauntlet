@@ -14,6 +14,8 @@ UEightDirectionChaseComponent::UEightDirectionChaseComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
+
 	// ...
 }
 
@@ -22,6 +24,7 @@ UEightDirectionChaseComponent::UEightDirectionChaseComponent()
 void UEightDirectionChaseComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
 
 	// ...
 	
@@ -32,7 +35,7 @@ float StopDistance = 100.0f;
 // Called every frame
 void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	UE_LOG(LogTemp, Log, TEXT("TickComponent is running"));
+	//UE_LOG(LogTemp, Log, TEXT("TickComponent is running"));
 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -42,27 +45,10 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 	AActor* Target = FindNearestPlayer();
 
 	if (Target) {
-		/* Old code that doesn't really work
-		FVector Dir = Get8DirectionVector(Target->GetActorLocation() - Owner->GetActorLocation());
-		FVector newLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
-		Owner->SetActorLocation(newLocation);
-		FRotator LookAtRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
-		Owner->SetActorRotation(LookAtRotation);
-
-		FVector Direction2D = Target->GetActorLocation() - Owner->GetActorLocation();
-		Direction2D.Z = 0.0f;
-
-		if (!Direction2D.IsNearlyZero())
-		{
-			FRotator LookAtRotation = Direction2D.Rotation();
-			Owner->SetActorRotation(LookAtRotation);
-		}
-		*/
-		
 		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
-		ToTarget.Z = 0.0f; // ensure 2D only
+		ToTarget.Z = 0.0f; // ensure 2D movement only
 
-		float Distance = ToTarget.Size(); // same as Size2D() after Z is zeroed
+		float Distance = ToTarget.Size(); // same as Size2D() after Z gets zeroed
 
 		if (Distance > StopDistance)
 		{
@@ -70,6 +56,14 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 			FVector NewLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
 			FHitResult Hit;
 			Owner->SetActorLocation(NewLocation, true, &Hit);
+
+			if (Hit.bBlockingHit)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Hit.GetActor()->GetName());
+			}
+			
+
+			//Owner->SetActorLocation(NewLocation, true, &Hit);
 			//Owner->SetActorLocation(NewLocation);
 		}
 
