@@ -27,7 +27,7 @@ void ACameraManager::BeginPlay()
         return;
 
     FVector midpoint = GetAveragePlayerLocation();
-    FVector desiredLocation = FVector(midpoint.X, midpoint.Y, cameraHeight);
+    FVector desiredLocation = FVector(midpoint.X, midpoint.Y, positionOffset.Z);
     SetActorLocation(ClampCameraPosition(desiredLocation));
 }
 
@@ -35,6 +35,12 @@ void ACameraManager::BeginPlay()
 void ACameraManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+    // I think it's more efficient to have the camera handle its own positioning
+    // update every frame, rather than make players notify it every time they
+    // move, which could potentially make the camera update itself four
+    // times per frame.
+    UpdateCameraLocation();
 }
 
 void ACameraManager::SetPlayerTargets(const TArray<AActor*>& NewTargets)
@@ -45,9 +51,9 @@ void ACameraManager::SetPlayerTargets(const TArray<AActor*>& NewTargets)
 
 void ACameraManager::UpdateCameraLocation()
 {
-    FVector zOffset = FVector(0, 0, cameraHeight);
+    /*FVector zOffset = FVector(0, 0, cameraHeight);*/
     FVector playerMidpoint = GetAveragePlayerLocation();
-    FVector newLocation = ClampCameraPosition(playerMidpoint + zOffset);
+    FVector newLocation = ClampCameraPosition(playerMidpoint + positionOffset);
 
     this->SetActorLocation(newLocation);
 }
@@ -65,9 +71,9 @@ FVector ACameraManager::GetAveragePlayerLocation() const
     return sum / playerTargets.Num();
 }
 
-FVector ACameraManager::ClampCameraPosition(const FVector& DesiredLocation) const
+FVector ACameraManager::ClampCameraPosition(const FVector& desiredLocation) const
 {
-    float ClampedX = FMath::Clamp(DesiredLocation.X, mapMinBounds.X, mapMaxBounds.X);
-    float ClampedY = FMath::Clamp(DesiredLocation.Y, mapMinBounds.Y, mapMaxBounds.Y);
-    return FVector(ClampedX, ClampedY, DesiredLocation.Z);
+    float ClampedX = FMath::Clamp(desiredLocation.X, mapMinBounds.X, mapMaxBounds.X);
+    float ClampedY = FMath::Clamp(desiredLocation.Y, mapMinBounds.Y, mapMaxBounds.Y);
+    return FVector(ClampedX, ClampedY, desiredLocation.Z);
 }

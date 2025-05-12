@@ -32,13 +32,13 @@ protected:
 	UCameraComponent* camera;
 
 	UPROPERTY(EditAnywhere)
-	FVector2D mapMinBounds = FVector2D(0.0f, 0.0f);
+	FVector2D mapMinBounds = FVector2D(-3000.0f, -3000.0f);
 
 	UPROPERTY(EditAnywhere)
-	FVector2D mapMaxBounds = FVector2D(5000.0f, 5000.0f);
+	FVector2D mapMaxBounds = FVector2D(3000.0f, 3000.0f);
 
 	UPROPERTY(EditAnywhere)
-	float cameraHeight = 2000.0f;
+	FVector positionOffset = FVector(0.0f, 0.0f, 2000.0f);
 
 	void UpdateCameraLocation();
 
