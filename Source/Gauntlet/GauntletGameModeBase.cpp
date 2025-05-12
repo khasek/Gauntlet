@@ -27,7 +27,6 @@ void AGauntletGameModeBase::BeginPlay()
 	ACameraManager* mainCamera = Cast<ACameraManager>(cameras[0]);
 
 	// Get references to all active player pawns
-	TArray<AActor*> playerPawns;
 	for (int i = 0; i < 4; i++)
 	{
 		APawn* pawn = UGameplayStatics::GetPlayerPawn(this, i);

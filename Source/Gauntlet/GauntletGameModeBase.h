@@ -14,6 +14,10 @@ class GAUNTLET_API AGauntletGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere)
+	TArray<AActor*> playerPawns;
+
 protected:
 	virtual void BeginPlay() override;
 };
