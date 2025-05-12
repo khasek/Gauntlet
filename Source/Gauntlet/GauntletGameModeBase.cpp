@@ -4,6 +4,7 @@
 #include "GauntletGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraActor.h"
+#include "CameraManager.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
 
@@ -23,7 +24,7 @@ void AGauntletGameModeBase::BeginPlay()
 		return;
 	}
 
-	AActor* mainCamera = cameras[0];
+	ACameraManager* mainCamera = Cast<ACameraManager>(cameras[0]);
 
 	// Get references to all active player pawns
 	TArray<AActor*> playerPawns;
@@ -42,18 +43,8 @@ void AGauntletGameModeBase::BeginPlay()
 		return;
 	}
 
-	// Calculate midpoint of all player pawns
-	FVector sum = FVector::ZeroVector;
-	for (AActor* player : playerPawns)
-	{
-		sum += player->GetActorLocation();
-	}
-
-	FVector midpoint = sum / playerPawns.Num();
-
-	// Update camera position to follow midpoint
-	FVector cameraZOffset = FVector(0, 0, 2000);
-	mainCamera->SetActorLocation(midpoint + cameraZOffset);
+	// Send the camera a reference to the players
+	mainCamera->SetPlayerTargets(playerPawns);
 
 	// Set all players' view targets to this camera
 	for (int i = 0; i < playerPawns.Num(); i++)

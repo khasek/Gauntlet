@@ -29,16 +29,18 @@ protected:
 	FVector ClampCameraPosition(const FVector& DesiredLocation) const;
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* Camera;
+	UCameraComponent* camera;
 
 	UPROPERTY(EditAnywhere)
-	FVector2D MapMinBounds = FVector2D(0.f, 0.f);
+	FVector2D mapMinBounds = FVector2D(0.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere)
-	FVector2D MapMaxBounds = FVector2D(5000.f, 5000.f);
+	FVector2D mapMaxBounds = FVector2D(5000.0f, 5000.0f);
 
 	UPROPERTY(EditAnywhere)
-	float CameraHeight = 1000.f;
+	float cameraHeight = 2000.0f;
 
-	TArray<AActor*> PlayerTargets;
+	void UpdateCameraLocation();
+
+	TArray<AActor*> playerTargets;
 };

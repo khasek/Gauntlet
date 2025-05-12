@@ -11,11 +11,11 @@ ACameraManager::ACameraManager()
 
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-    Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-    Camera->SetupAttachment(RootComponent);
+    camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
+    camera->SetupAttachment(RootComponent);
 
     // Make the camera look straight down
-    Camera->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
+    camera->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 }
 
 // Called when the game starts or when spawned
@@ -23,42 +23,51 @@ void ACameraManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    if (PlayerTargets.Num() == 0)
+    if (playerTargets.Num() == 0)
         return;
 
-    FVector Midpoint = GetAveragePlayerLocation();
-    FVector DesiredLocation = FVector(Midpoint.X, Midpoint.Y, CameraHeight);
-    SetActorLocation(ClampCameraPosition(DesiredLocation));
+    FVector midpoint = GetAveragePlayerLocation();
+    FVector desiredLocation = FVector(midpoint.X, midpoint.Y, cameraHeight);
+    SetActorLocation(ClampCameraPosition(desiredLocation));
 }
 
 // Called every frame
 void ACameraManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ACameraManager::SetPlayerTargets(const TArray<AActor*>& NewTargets)
 {
-    PlayerTargets = NewTargets;
+    playerTargets = NewTargets;
+    UpdateCameraLocation();
+}
+
+void ACameraManager::UpdateCameraLocation()
+{
+    FVector zOffset = FVector(0, 0, cameraHeight);
+    FVector playerMidpoint = GetAveragePlayerLocation();
+    FVector newLocation = ClampCameraPosition(playerMidpoint + zOffset);
+
+    this->SetActorLocation(newLocation);
 }
 
 FVector ACameraManager::GetAveragePlayerLocation() const
 {
-    FVector Sum = FVector::ZeroVector;
-    for (AActor* Target : PlayerTargets)
+    FVector sum = FVector::ZeroVector;
+    for (AActor* target : playerTargets)
     {
-        if (Target)
+        if (target)
         {
-            Sum += Target->GetActorLocation();
+            sum += target->GetActorLocation();
         }
     }
-    return Sum / PlayerTargets.Num();
+    return sum / playerTargets.Num();
 }
 
 FVector ACameraManager::ClampCameraPosition(const FVector& DesiredLocation) const
 {
-    float ClampedX = FMath::Clamp(DesiredLocation.X, MapMinBounds.X, MapMaxBounds.X);
-    float ClampedY = FMath::Clamp(DesiredLocation.Y, MapMinBounds.Y, MapMaxBounds.Y);
+    float ClampedX = FMath::Clamp(DesiredLocation.X, mapMinBounds.X, mapMaxBounds.X);
+    float ClampedY = FMath::Clamp(DesiredLocation.Y, mapMinBounds.Y, mapMaxBounds.Y);
     return FVector(ClampedX, ClampedY, DesiredLocation.Z);
 }
