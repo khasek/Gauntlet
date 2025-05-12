@@ -41,6 +41,32 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 	AActor* Owner = GetOwner();
 	if (!Owner) return;
+	if (lobberMovement) {
+		AActor* Target = FindNearestPlayer();
+
+		if (Target) {
+			FVector awayVector = Owner->GetActorLocation() - Target->GetActorLocation();
+			awayVector.Z = 0;
+
+			float distance = awayVector.Size();
+
+			if (distance < lobberRunDistance) {
+				FVector Dir = Get8DirectionVector(awayVector);
+				FVector NewLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
+
+				FHitResult hit;
+
+				Owner->SetActorLocation(NewLocation, true, &hit);
+
+				if (!awayVector.IsNearlyZero()) {
+					FRotator LookAtRotation = (-awayVector).Rotation();
+					Owner->SetActorRotation(LookAtRotation);
+				}
+			}
+		}
+
+		return;
+	}
 
 	AActor* Target = FindNearestPlayer();
 

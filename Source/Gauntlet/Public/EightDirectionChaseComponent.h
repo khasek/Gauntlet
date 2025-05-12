@@ -28,10 +28,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float MovementSpeed = 200.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float lobberRunDistance = 300.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool lobberMovement = false;
+
+
+	UFUNCTION(BlueprintCallable, Category = "EnemyAI")
+	AActor* FindNearestPlayer();
+
+	FVector Get8DirectionVector(FVector ToTarget);
 
 private:
-	AActor* FindNearestPlayer();
-	FVector Get8DirectionVector(FVector ToTarget);
+	
 
 		
 };
