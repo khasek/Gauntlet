@@ -15,9 +15,9 @@ void AGauntletGameModeBase::BeginPlay()
 
 	// Initialize player controllers -------------------------------------------
 
-	// Override default new player handling
-	DefaultPawnClass = nullptr;
-	PlayerControllerClass = AGauntletPlayerController::StaticClass();
+	//// Override default new player handling
+	//DefaultPawnClass = nullptr;
+	//PlayerControllerClass = AGauntletPlayerController::StaticClass();
 
 	// Set up the top-down camera view -----------------------------------------
 
