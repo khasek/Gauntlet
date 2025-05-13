@@ -2,6 +2,7 @@
 
 
 #include "GauntletGameModeBase.h"
+#include "GauntletPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraActor.h"
 #include "CameraManager.h"
@@ -11,6 +12,12 @@
 void AGauntletGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Initialize player controllers -------------------------------------------
+
+	// Override default new player handling
+	DefaultPawnClass = nullptr;
+	PlayerControllerClass = AGauntletPlayerController::StaticClass();
 
 	// Set up the top-down camera view -----------------------------------------
 

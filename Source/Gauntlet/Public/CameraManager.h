@@ -21,6 +21,9 @@ public:
 
 	void SetPlayerTargets(const TArray<AActor*>& NewTargets);
 
+	UFUNCTION(BlueprintCallable)
+	void AddPlayerTarget(AActor* NewTarget);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

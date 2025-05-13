@@ -49,6 +49,12 @@ void ACameraManager::SetPlayerTargets(const TArray<AActor*>& NewTargets)
     UpdateCameraLocation();
 }
 
+void ACameraManager::AddPlayerTarget(AActor* NewTarget)
+{
+    playerTargets.Add(NewTarget);
+    UpdateCameraLocation();
+}
+
 void ACameraManager::UpdateCameraLocation()
 {
     /*FVector zOffset = FVector(0, 0, cameraHeight);*/
