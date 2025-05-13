@@ -39,10 +39,11 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	AActor* Target = FindNearestPlayer();
+
 	AActor* Owner = GetOwner();
 	if (!Owner) return;
 	if (lobberMovement) {
-		AActor* Target = FindNearestPlayer();
 
 		if (Target) {
 			FVector awayVector = Owner->GetActorLocation() - Target->GetActorLocation();
@@ -52,7 +53,7 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 			if (distance < lobberRunDistance) {
 				FVector Dir = Get8DirectionVector(awayVector);
-				FVector NewLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
+				FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
 
 				FHitResult hit;
 
@@ -68,7 +69,62 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		return;
 	}
 
-	AActor* Target = FindNearestPlayer();
+	if (sorcMovement) {
+		//UE_LOG(LogTemp, Warning, TEXT("sorcMovement Reached"));
+		blinkTimer += DeltaTime;
+
+		if (blinkTimer >= blinkInterval && !phasingOut) {
+			phasingOut = true;
+			blinkFadeTimer = 0.0f;
+			//UE_LOG(LogTemp, Warning, TEXT("Phasing set to true"));
+		}
+
+		if (phasingOut && HasLineOfSight(Target)) {
+			blinkFadeTimer += DeltaTime;
+
+			float Opacity = FMath::Lerp(1.0f, 0.0f, blinkFadeTimer / blinkFadeDuration);
+			
+			//SetOwnerOpacity(Opacity);
+			//UE_LOG(LogTemp, Warning, TEXT("Opacity setting reached"));
+			if (blinkFadeTimer >= blinkFadeDuration && !invisible) {
+				Target = FindNearestPlayer();
+				if (Target && HasLineOfSight(Target)) {
+					FVector Dir = (Target->GetActorLocation() - Owner->GetActorLocation());
+					float dist = Dir.Size();
+					Dir = Dir.GetSafeNormal2D();
+					if (dist < blinkDistance) {
+						blinkDistance = dist - 100;
+						
+					}
+					if (blinkDistance < 100)
+						blinkDistance = 0;
+					
+
+					FVector blinkLocation = Owner->GetActorLocation() + Dir * blinkDistance;
+
+					Owner->SetActorLocation(blinkLocation, true);
+				}
+				//UE_LOG(LogTemp, Warning, TEXT("Opacity: %f"), Opacity);
+				invisible = true;
+				blinkFadeTimer = 0.0f;
+			}
+			else if (invisible && blinkFadeTimer >= blinkFadeDuration){
+
+				phasingOut = false;
+				invisible = false;
+				blinkTimer = 0.0f;
+				
+			}
+			else if (invisible) {
+				blinkFadeTimer += DeltaTime;
+				Opacity = FMath::Lerp(0.0f, 1.0f, blinkFadeTimer / blinkFadeDuration);
+				//SetOwnerOpacity(Opacity);
+			}
+		}
+		blinkDistance = 600.0f;
+		return;
+	}
+	
 
 	if (Target) {
 		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
@@ -79,7 +135,7 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		if (Distance > StopDistance)
 		{
 			FVector Dir = Get8DirectionVector(ToTarget);
-			FVector NewLocation = Owner->GetActorLocation() + Dir * MovementSpeed * DeltaTime;
+			FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
 			FHitResult Hit;
 			Owner->SetActorLocation(NewLocation, true, &Hit);
 
@@ -126,7 +182,7 @@ FVector UEightDirectionChaseComponent::Get8DirectionVector(FVector ToTarget) {
 
 	ToTarget.Normalize();
 
-	// Get angle in degrees between 0 and 360
+	// Get angle to target player in degrees between 0 and 360
 	float Angle = FMath::RadiansToDegrees(FMath::Atan2(ToTarget.Y, ToTarget.X));
 	if (Angle < 0.0f)
 		Angle += 360.0f;
@@ -153,4 +209,46 @@ FVector UEightDirectionChaseComponent::Get8DirectionVector(FVector ToTarget) {
 
 	return Chosen;
 }
+
+void UEightDirectionChaseComponent::SetOwnerOpacity(float Opacity) {
+	AActor* Owner = GetOwner();
+	if (!Owner) return;
+
+	TArray<UMeshComponent*>(Meshes);
+	Owner->GetComponents<UMeshComponent>(Meshes);
+
+	for (UMeshComponent* Mesh : Meshes) {
+		int32 NumMats = Mesh->GetNumMaterials();
+		for (int32 i = 0; i < NumMats; ++i) {
+			UMaterialInstanceDynamic* dynamicMat = Mesh->CreateAndSetMaterialInstanceDynamic(i);
+			if (dynamicMat)
+				dynamicMat->SetScalarParameterValue("Opacity", Opacity);
+		}
+	}
+}
+
+bool UEightDirectionChaseComponent::HasLineOfSight(AActor* Target) {
+	FHitResult hitResult;
+	AActor* Owner = GetOwner();
+	UE_LOG(LogTemp, Warning, TEXT("HasLineOfSight Reached"));
+
+
+
+	FVector Start = Owner->GetActorLocation();
+	FVector End = Target->GetActorLocation();
+
+	FCollisionQueryParams TraceParams(FName(TEXT("LineOfSightTrace")), true, Owner);
+	TraceParams.bReturnPhysicalMaterial = false;
+	TraceParams.AddIgnoredActor(Owner);
+
+	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, TraceParams);
+	
+	
+	
+	return hit && hitResult.GetActor() == Target;
+
+}
+
+
+
 
