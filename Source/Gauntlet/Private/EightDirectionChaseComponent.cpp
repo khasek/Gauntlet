@@ -140,8 +140,9 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 					Fireball->Init(Direction);
 				}
 			}
-			
 		}
+		else
+			shooting = false;
 	}
 
 	if (Target && !shooting) {
