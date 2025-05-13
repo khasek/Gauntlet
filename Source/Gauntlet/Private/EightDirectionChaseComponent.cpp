@@ -124,9 +124,27 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		blinkDistance = 600.0f;
 		return;
 	}
-	
+	if (demonMovement) {
+		fireballTimer += DeltaTime;
+		if (HasLineOfSight(Target)) {
+			shooting = true;
+			if (fireballTimer >= 3.0f) {
+				fireballTimer = 0.0f;
+				FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
+				FRotator SpawnRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
 
-	if (Target) {
+				FActorSpawnParameters SpawnParams;
+				AFireballHandling* Fireball = GetWorld()->SpawnActor<AFireballHandling>(FireballClass, SpawnLocation, SpawnRotation, SpawnParams);
+				if (Fireball) {
+					FVector Direction = Target->GetActorLocation() - SpawnLocation;
+					Fireball->Init(Direction);
+				}
+			}
+			
+		}
+	}
+
+	if (Target && !shooting) {
 		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
 		ToTarget.Z = 0.0f; // ensure 2D movement only
 
@@ -204,6 +222,8 @@ FVector UEightDirectionChaseComponent::Get8DirectionVector(FVector ToTarget) {
 	};
 
 	//UE_LOG(LogTemp, Warning, TEXT("Sector: %d, Direction: %s"), Sector, *Directions[Sector].ToString()); log used to help bug solve
+	
+
 
 	FVector Chosen = Directions[Sector].GetSafeNormal();
 
@@ -231,8 +251,6 @@ bool UEightDirectionChaseComponent::HasLineOfSight(AActor* Target) {
 	FHitResult hitResult;
 	AActor* Owner = GetOwner();
 	UE_LOG(LogTemp, Warning, TEXT("HasLineOfSight Reached"));
-
-
 
 	FVector Start = Owner->GetActorLocation();
 	FVector End = Target->GetActorLocation();

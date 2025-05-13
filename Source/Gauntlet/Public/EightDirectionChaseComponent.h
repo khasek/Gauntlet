@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "FireballHandling.h"
 #include "EightDirectionChaseComponent.generated.h"
 
 
@@ -36,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool sorcMovement = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool demonMovement = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float blinkInterval = 3.0f;
 
@@ -50,12 +54,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool phasingOut = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool invisible = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float blinkFadeTimer = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float fireballTimer = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool shooting = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
+	TSubclassOf<AFireballHandling> FireballClass;
+
+	UFUNCTION(BlueprintCallable, Category = "EnemyAI")
 	bool HasLineOfSight(AActor* Target);
 
 	void SetOwnerOpacity(float Opacity);
