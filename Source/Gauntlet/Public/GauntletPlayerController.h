@@ -7,7 +7,7 @@
 #include "Delegates/DelegateCombinations.h"
 #include "GauntletPlayerController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterSelected, AGauntletPlayerController*, playerController);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterSelected, APlayerController*, playerController);
 
 UCLASS()
 class GAUNTLET_API AGauntletPlayerController : public APlayerController
