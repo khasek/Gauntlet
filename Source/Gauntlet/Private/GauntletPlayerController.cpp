@@ -7,7 +7,4 @@ void AGauntletPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//// Spawn and possess a character selection box
-	//APawn* characterSelector = GetWorld()->SpawnActor<ACharacterSelector>();
-	//Possess(characterSelector);
 }
