@@ -72,6 +72,7 @@ void AGauntletCharacter::Shoot()
 	//AActor* Owner = GetOwner();
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 50;
 	FRotator SpawnRotation = GetActorRotation();
+	SpawnRotation.Pitch += 90.0f;
 
 	FActorSpawnParameters SpawnParams;
 	APlayerProjectile* Projectile = GetWorld()->SpawnActor<APlayerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
