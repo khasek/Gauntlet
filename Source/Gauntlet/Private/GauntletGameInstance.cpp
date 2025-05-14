@@ -24,7 +24,7 @@ void UGauntletGameInstance::Init()
 /// A read-only request for character assignment information
 /// </summary>
 /// <returns>A constant reference to the map of character assignments</returns>
-const TMap<FName, AGauntletPlayerController*>& UGauntletGameInstance::GetCharacterAssignments() const
+const TMap<FName, APlayerController*>& UGauntletGameInstance::GetCharacterAssignments() const
 {
 	return CharacterAssignments;
 }
@@ -35,7 +35,7 @@ const TMap<FName, AGauntletPlayerController*>& UGauntletGameInstance::GetCharact
 /// <param name="character">A character class name (Warrior, Valkyrie, Wizard, Elf)</param>
 /// <param name="player">The PlayerController that wants the character</param>
 /// <returns>A boolean indicating whether the assignment was successful</returns>
-bool UGauntletGameInstance::AddCharacterAssignment(FName character, AGauntletPlayerController* player)
+bool UGauntletGameInstance::AddCharacterAssignment(FName character, APlayerController* player)
 {
 	// If the requested character is already claimed return false
 	if (CharacterAssignments[character] != nullptr)

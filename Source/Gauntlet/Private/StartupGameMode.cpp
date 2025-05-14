@@ -6,14 +6,16 @@
 *******************************************************************************/
 
 #include "Kismet/GameplayStatics.h"
+#include "GauntletPlayerState.h"
 #include "StartupGameMode.h"
 
 /// <summary>
-/// Constructor sets the default class for spawned PlayerControllers
+/// Constructor sets the default class for spawned PlayerControllers and PlayerStates
 /// </summary>
 AStartupGameMode::AStartupGameMode()
 {
 	PlayerControllerClass = AGauntletPlayerController::StaticClass();
+	PlayerStateClass = AGauntletPlayerState::StaticClass();
 }
 
 /// <summary>

@@ -9,7 +9,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "GauntletPlayerController.h"
 #include "GauntletGameInstance.generated.h"
 
 
@@ -20,11 +19,11 @@ class GAUNTLET_API UGauntletGameInstance : public UGameInstance
 	
 public:
 	virtual void Init() override;
-	const TMap<FName, AGauntletPlayerController*>& GetCharacterAssignments() const;
-	bool AddCharacterAssignment(FName, AGauntletPlayerController*);
+	const TMap<FName, APlayerController*>& GetCharacterAssignments() const;
+	bool AddCharacterAssignment(FName, APlayerController*);
 
 private:
-	TMap<FName, AGauntletPlayerController*> CharacterAssignments;
-	TMap<AGauntletPlayerController*, FName> AssignedCharacters;
+	TMap<FName, APlayerController*> CharacterAssignments;
+	TMap<APlayerController*, FName> AssignedCharacters;
 
 };

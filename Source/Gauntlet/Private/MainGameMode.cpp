@@ -8,7 +8,6 @@
 #include "GameFramework/PlayerStart.h"
 #include "CameraManager.h"
 #include "GauntletGameInstance.h"
-#include "GauntletPlayerController.h"
 #include "GauntletCharacter.h"
 #include "MainGameMode.h"
 
@@ -54,7 +53,7 @@ void AMainGameMode::BeginPlay()
 
 	// Get character:player pairs
 	UGauntletGameInstance* gameInstance = Cast<UGauntletGameInstance>(GetGameInstance());
-	const TMap<FName, AGauntletPlayerController*> characterAssignments = gameInstance->GetCharacterAssignments();
+	const TMap<FName, APlayerController*> characterAssignments = gameInstance->GetCharacterAssignments();
 
 	// Spawn Warrior
 	if (characterAssignments["Warrior"] != nullptr)
