@@ -27,8 +27,18 @@ void AFireballHandling::Tick(float DeltaTime)
 	FHitResult Hit;
 	SetActorLocation(NewLocation, true, &Hit);
 
-	if (Hit.bBlockingHit)
+	if (Hit.bBlockingHit) {
+
+		AActor* HitActor = Hit.GetActor();
+		
+		if (HitActor && HitActor->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass())) {
+			IBPI_TakeDamage::Execute_ApplyDamage(HitActor, 10);
+		}
+		
+
 		Destroy();
+	}
+		
 
 }
 

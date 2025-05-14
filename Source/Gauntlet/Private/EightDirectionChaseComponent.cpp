@@ -251,7 +251,7 @@ void UEightDirectionChaseComponent::SetOwnerOpacity(float Opacity) {
 bool UEightDirectionChaseComponent::HasLineOfSight(AActor* Target) {
 	FHitResult hitResult;
 	AActor* Owner = GetOwner();
-	UE_LOG(LogTemp, Warning, TEXT("HasLineOfSight Reached"));
+	//UE_LOG(LogTemp, Warning, TEXT("HasLineOfSight Reached"));
 
 	FVector Start = Owner->GetActorLocation();
 	FVector End = Target->GetActorLocation();
