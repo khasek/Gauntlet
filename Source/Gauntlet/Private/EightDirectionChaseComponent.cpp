@@ -30,6 +30,7 @@ void UEightDirectionChaseComponent::BeginPlay()
 	
 }
 
+//So the sorcerers don't teleport inside the player
 float StopDistance = 100.0f;
 
 // Called every frame
@@ -43,6 +44,8 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 	AActor* Owner = GetOwner();
 	if (!Owner) return;
+
+	//Handles movement for the lobber, who runs away if the player is too close0
 	if (lobberMovement) {
 
 		if (Target) {
@@ -69,6 +72,7 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		return;
 	}
 
+	//Scuffed Sorcerer code, the opacity doesn't changing doesn't work but it was attempted
 	if (sorcMovement) {
 		//UE_LOG(LogTemp, Warning, TEXT("sorcMovement Reached"));
 		blinkTimer += DeltaTime;
@@ -124,6 +128,8 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		blinkDistance = 600.0f;
 		return;
 	}
+
+	//Handles movement and shooting for demons, who stop to shoot when they have LOS
 	if (demonMovement) {
 		fireballTimer += DeltaTime;
 		if (HasLineOfSight(Target)) {
@@ -145,6 +151,7 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 			shooting = false;
 	}
 
+	//Base movement script, tries to move towards player at all times
 	if (Target && !shooting) {
 		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
 		ToTarget.Z = 0.0f; // ensure 2D movement only
@@ -180,6 +187,7 @@ AActor* UEightDirectionChaseComponent::FindNearestPlayer() {
 	AActor* Nearest = nullptr;
 	float ClosestDistSq = FLT_MAX;
 
+	//Finds all posessed pawns and checks their distance to owner
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It) {
 		APawn* PlayerPawn = It->Get()->GetPawn();
 		if (PlayerPawn) {
@@ -260,11 +268,38 @@ bool UEightDirectionChaseComponent::HasLineOfSight(AActor* Target) {
 	TraceParams.bReturnPhysicalMaterial = false;
 	TraceParams.AddIgnoredActor(Owner);
 
-	bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, TraceParams);
+	TArray<FHitResult> HitResults;
+
+	//Tries to raycast through enemies so that they can shoot the player still
+	bool bHit = GetWorld()->LineTraceMultiByChannel(HitResults, Start, End, ECC_Visibility, TraceParams);
+
+	for (const FHitResult& Hit : HitResults)
+	{
+		AActor* HitActor = Hit.GetActor();
+
+		if (!IsValid(HitActor))
+			continue;
+
+		if (HitActor == Target)
+			return true;
+
+		if (!HitActor->ActorHasTag("Enemy"))
+			return false;
+
+	}
 	
+	return false; 
+
+
+	/*bool hit = GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECC_Visibility, TraceParams);
+
+	AActor* HitActor = hitResult.GetActor();
 	
+	if (HitActor == Target) {
+		return true;
+	}
 	
-	return hit && hitResult.GetActor() == Target;
+	return false;*/
 
 }
 
