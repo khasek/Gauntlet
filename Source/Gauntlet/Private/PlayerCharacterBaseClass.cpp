@@ -31,6 +31,33 @@ void APlayerCharacterBaseClass::SetupPlayerInputComponent(UInputComponent* Playe
 
 	PlayerInputComponent->BindAxis("MoveForwardBack", this, &APlayerCharacterBaseClass::MoveForwardBack);
 	PlayerInputComponent->BindAxis("MoveLeftRight", this, &APlayerCharacterBaseClass::MoveLeftRight);
+
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC) return;
+
+	int32 PlayerIndex = PC->GetLocalPlayer()->GetControllerId();
+
+	switch (PlayerIndex)
+	{
+	case 0:
+		PlayerInputComponent->BindAction("Shoot_P1", IE_Pressed, this, &APlayerCharacterBaseClass::Shoot);
+		break;
+
+	case 1:
+		PlayerInputComponent->BindAction("Shoot_P2", IE_Pressed, this, &APlayerCharacterBaseClass::Shoot);
+		break;
+
+	case 2:
+		PlayerInputComponent->BindAction("Shoot_P3", IE_Pressed, this, &APlayerCharacterBaseClass::Shoot);
+		break;
+
+	case 3:
+		PlayerInputComponent->BindAction("Shoot_P3", IE_Pressed, this, &APlayerCharacterBaseClass::Shoot);
+		break;
+
+	default:
+		break;
+	}
 }
 
 void APlayerCharacterBaseClass::MoveForwardBack(float value) 
@@ -45,11 +72,19 @@ void APlayerCharacterBaseClass::MoveLeftRight(float value)
 
 void APlayerCharacterBaseClass::Shoot()
 {
+	//AActor* Owner = GetOwner();
+	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 50;
+	FRotator SpawnRotation = GetActorRotation();
 
+	FActorSpawnParameters SpawnParams;
+	APlayerProjectile* Projectile = GetWorld()->SpawnActor<APlayerProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	FVector Dir = GetActorForwardVector();
+	Projectile->Init(Dir);
 }
 
 void APlayerCharacterBaseClass::UsePotion()
 {
 
 }
+
 
