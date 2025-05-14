@@ -1,28 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+/*******************************************************************************
+* GauntletCharacter is the base class for the four playable characters:
+* Warrior, Valkyrie, Wizard, and Elf.
+*
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #include "GauntletCharacter.h"
 
-// Sets default values
 AGauntletCharacter::AGauntletCharacter()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+ 	
 }
 
 // Called when the game starts or when spawned
 void AGauntletCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AGauntletCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -30,5 +23,28 @@ void AGauntletCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForwardBack", this, &AGauntletCharacter::MoveForwardBack);
+	PlayerInputComponent->BindAxis("MoveLeftRight", this, &AGauntletCharacter::MoveLeftRight);
+	PlayerInputComponent->BindAxis("Shoot", this, &AGauntletCharacter::Shoot);
+	PlayerInputComponent->BindAction("UsePotion", IE_Pressed, this, &AGauntletCharacter::UsePotion);
 }
 
+void AGauntletCharacter::MoveForwardBack(float value)
+{
+	AddMovementInput(GetActorForwardVector(), value);
+}
+
+void AGauntletCharacter::MoveLeftRight(float value)
+{
+	AddMovementInput(GetActorRightVector(), value);
+}
+
+void AGauntletCharacter::Shoot(float value)
+{
+
+}
+
+void AGauntletCharacter::UsePotion()
+{
+
+}

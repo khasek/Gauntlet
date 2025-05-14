@@ -1,9 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*******************************************************************************
+* GauntletCharacter is the base class for the four playable characters:
+* Warrior, Valkyrie, Wizard, and Elf. 
+* 
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "PlayerHealthComponent.h"
+#include "ScoreComponent.h"
+#include "InventoryComponent.h"
 #include "GauntletCharacter.generated.h"
 
 UCLASS()
@@ -12,18 +20,36 @@ class GAUNTLET_API AGauntletCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	AGauntletCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	// Note: These need to be pointers (Unreal will crash if they aren't)
+	UPlayerHealthComponent* healthComponent;
+	UScoreComponent* scoreComponent;
+	UInventoryComponent* inventoryComponent;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float meleeStrength;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float rangeStrength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float defense;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float moveSpeed;
+
+	void MoveForwardBack(float value);
+	void MoveLeftRight(float value);
+
+	UFUNCTION()
+	void Shoot(float value);
+
+	UFUNCTION()
+	void UsePotion();
 };
