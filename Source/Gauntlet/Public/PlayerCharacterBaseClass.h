@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float moveSpeed;
 
-	UPROPERTY(EditDefaultsOnly, Category = "PlayerProjectile")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerProjectile")
 	TSubclassOf<APlayerProjectile> ProjectileClass;
 
 
