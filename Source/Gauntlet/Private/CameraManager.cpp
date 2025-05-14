@@ -1,16 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+/*******************************************************************************
+* CameraManager manages a shared top-down game camera that follows active
+* players and clamps to a specified playable area.
+*
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #include "CameraManager.h"
 
-// Sets default values
+/// <summary>
+/// Initializes a top-down camera component
+/// </summary>
 ACameraManager::ACameraManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+    // Initialize a camera component
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-
     camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
     camera->SetupAttachment(RootComponent);
 
@@ -18,7 +23,9 @@ ACameraManager::ACameraManager()
     camera->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 }
 
-// Called when the game starts or when spawned
+/// <summary>
+/// The camera positions itself midway between any active players
+/// </summary>
 void ACameraManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -26,44 +33,45 @@ void ACameraManager::BeginPlay()
     if (playerTargets.Num() == 0)
         return;
 
-    FVector midpoint = GetAveragePlayerLocation();
-    FVector desiredLocation = FVector(midpoint.X, midpoint.Y, positionOffset.Z);
-    SetActorLocation(ClampCameraPosition(desiredLocation));
+    UpdateCameraLocation();
 }
 
-// Called every frame
+/// <summary>
+/// Update location every tick, rather than managing location updates
+/// from up to four players
+/// </summary>
+/// <param name="DeltaTime"></param>
 void ACameraManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-    // I think it's more efficient to have the camera handle its own positioning
-    // update every frame, rather than make players notify it every time they
-    // move, which could potentially make the camera update itself four
-    // times per frame.
     UpdateCameraLocation();
 }
 
-void ACameraManager::SetPlayerTargets(const TArray<AActor*>& NewTargets)
+/// <summary>
+/// Add a player to the list of players the camera is following
+/// </summary>
+/// <param name="target">A new player to target</param>
+void ACameraManager::AddPlayerTarget(AActor* target)
 {
-    playerTargets = NewTargets;
+    playerTargets.Add(target);
     UpdateCameraLocation();
 }
 
-void ACameraManager::AddPlayerTarget(AActor* NewTarget)
-{
-    playerTargets.Add(NewTarget);
-    UpdateCameraLocation();
-}
-
+/// <summary>
+/// Reset the camera's current position based on the positions of active players
+/// </summary>
 void ACameraManager::UpdateCameraLocation()
 {
-    /*FVector zOffset = FVector(0, 0, cameraHeight);*/
     FVector playerMidpoint = GetAveragePlayerLocation();
     FVector newLocation = ClampCameraPosition(playerMidpoint + positionOffset);
 
     this->SetActorLocation(newLocation);
 }
 
+/// <summary>
+/// Average all player coordinates to determine a midpoint
+/// </summary>
+/// <returns>A midpoint between all active players</returns>
 FVector ACameraManager::GetAveragePlayerLocation() const
 {
     FVector sum = FVector::ZeroVector;
@@ -77,6 +85,12 @@ FVector ACameraManager::GetAveragePlayerLocation() const
     return sum / playerTargets.Num();
 }
 
+/// <summary>
+/// Returns a position as close to the target position as possible without
+/// exceeding a predefined range limit
+/// </summary>
+/// <param name="desiredLocation">The location the camera is trying to move to</param>
+/// <returns>A clamped location</returns>
 FVector ACameraManager::ClampCameraPosition(const FVector& desiredLocation) const
 {
     float ClampedX = FMath::Clamp(desiredLocation.X, mapMinBounds.X, mapMaxBounds.X);

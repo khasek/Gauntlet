@@ -1,4 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*******************************************************************************
+* CameraManager manages a shared top-down game camera that follows active
+* players and clamps to a specified playable area.
+* 
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #pragma once
 
@@ -13,19 +18,14 @@ class GAUNTLET_API ACameraManager : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ACameraManager();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetPlayerTargets(const TArray<AActor*>& NewTargets);
-
 	UFUNCTION(BlueprintCallable)
-	void AddPlayerTarget(AActor* NewTarget);
+	void AddPlayerTarget(AActor* target);
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	FVector GetAveragePlayerLocation() const;
