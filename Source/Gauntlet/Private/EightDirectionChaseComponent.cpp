@@ -156,7 +156,7 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
 		ToTarget.Z = 0.0f; // ensure 2D movement only
 
-		float Distance = ToTarget.Size(); // same as Size2D() after Z gets zeroed
+		float Distance = ToTarget.Size(); 
 
 		if (Distance > StopDistance)
 		{
@@ -167,7 +167,12 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 			if (Hit.bBlockingHit)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Hit.GetActor()->GetName());
+				//UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Hit.GetActor()->GetName());
+				//if (Hit.GetActor()->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass()))
+				//{
+				//	// Trigger melee logic here
+				//	UE_LOG(LogTemp, Warning, TEXT("Hit the player!"));
+				//}
 			}
 			
 
