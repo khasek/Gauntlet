@@ -31,6 +31,8 @@ void APlayerCharacterBaseClass::SetupPlayerInputComponent(UInputComponent* Playe
 
 	PlayerInputComponent->BindAxis("MoveForwardBack", this, &APlayerCharacterBaseClass::MoveForwardBack);
 	PlayerInputComponent->BindAxis("MoveLeftRight", this, &APlayerCharacterBaseClass::MoveLeftRight);
+
+	
 }
 
 void APlayerCharacterBaseClass::MoveForwardBack(float value) 
@@ -45,11 +47,12 @@ void APlayerCharacterBaseClass::MoveLeftRight(float value)
 
 void APlayerCharacterBaseClass::Shoot()
 {
-
+	
 }
 
 void APlayerCharacterBaseClass::UsePotion()
 {
 
 }
+
 

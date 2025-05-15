@@ -12,6 +12,7 @@
 #include "PlayerHealthComponent.h"
 #include "ScoreComponent.h"
 #include "InventoryComponent.h"
+#include "PlayerProjectile.h"
 #include "GauntletCharacter.generated.h"
 
 UCLASS()
@@ -48,8 +49,11 @@ protected:
 	void MoveLeftRight(float value);
 
 	UFUNCTION()
-	void Shoot(float value);
+	void Shoot();
 
 	UFUNCTION()
 	void UsePotion();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerProjectile")
+	TSubclassOf<APlayerProjectile> ProjectileClass;
 };

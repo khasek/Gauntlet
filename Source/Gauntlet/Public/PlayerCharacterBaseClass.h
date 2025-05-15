@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "PlayerProjectile.h"
 #include "PlayerCharacterBaseClass.generated.h"
 
 UCLASS()
@@ -32,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float moveSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerProjectile")
+	TSubclassOf<APlayerProjectile> ProjectileClass;
 
 
 	// health component includes max health and defense
