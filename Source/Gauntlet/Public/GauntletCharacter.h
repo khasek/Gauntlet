@@ -2,7 +2,7 @@
 * GauntletCharacter is the base class for the four playable characters:
 * Warrior, Valkyrie, Wizard, and Elf. 
 * 
-* Author: Kendal Hasek
+* Author: Kendal Hasek, Logan Sharkey
 *******************************************************************************/
 
 #pragma once
@@ -23,6 +23,7 @@ class GAUNTLET_API AGauntletCharacter : public APawn
 
 public:
 	AGauntletCharacter();
+	virtual void Tick(float DeltaTime) override;
 
 	// Note: These need to be pointers (Unreal will crash if they aren't)
 	UPlayerHealthComponent* healthComponent;
@@ -48,6 +49,9 @@ protected:
 
 	void MoveForwardBack(float value);
 	void MoveLeftRight(float value);
+	FVector shootDirection = FVector::ZeroVector;
+	bool isMovingFB;
+	bool isMovingLR;
 
 	UPROPERTY(VisibleAnywhere)
 	class UFloatingPawnMovement* MovementComponent;
