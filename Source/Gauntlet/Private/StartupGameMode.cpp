@@ -50,5 +50,6 @@ void AStartupGameMode::StartGame()
 	}
 
 	// Load Level 1
-	UGameplayStatics::OpenLevel(this, "Level1", true);
+	//UGameplayStatics::OpenLevel(this, "Level1", true);
+	GetWorld()->GetFirstPlayerController()->ClientTravel("Level1", TRAVEL_Relative, true);
 }

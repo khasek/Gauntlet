@@ -9,6 +9,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "PlayerHealthComponent.h"
 #include "ScoreComponent.h"
 #include "InventoryComponent.h"
@@ -47,6 +48,9 @@ protected:
 
 	void MoveForwardBack(float value);
 	void MoveLeftRight(float value);
+
+	UPROPERTY(VisibleAnywhere)
+	class UFloatingPawnMovement* MovementComponent;
 
 	UFUNCTION()
 	void Shoot();

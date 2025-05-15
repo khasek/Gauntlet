@@ -2,14 +2,14 @@
 * GauntletCharacter is the base class for the four playable characters:
 * Warrior, Valkyrie, Wizard, and Elf.
 *
-* Author: Kendal Hasek
+* Author: Kendal Hasek, Logan Sharkey
 *******************************************************************************/
 
 #include "GauntletCharacter.h"
 
 AGauntletCharacter::AGauntletCharacter()
 {
- 	
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -59,12 +59,18 @@ void AGauntletCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AGauntletCharacter::MoveForwardBack(float value)
 {
-	AddMovementInput(GetActorForwardVector(), value);
+	if (Controller && value != 0.0f)
+	{
+		AddMovementInput(GetActorForwardVector(), value);
+	}
 }
 
 void AGauntletCharacter::MoveLeftRight(float value)
 {
-	AddMovementInput(GetActorRightVector(), value);
+	if (Controller && value != 0.0f)
+	{
+		AddMovementInput(GetActorRightVector(), value);
+	}
 }
 
 void AGauntletCharacter::Shoot()

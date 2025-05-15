@@ -43,8 +43,6 @@ void AMainGameMode::PostSeamlessTravel()
 {
 	Super::PostSeamlessTravel();
 
-	UE_LOG(LogTemp, Warning, TEXT("In PostSeamlessTravel"));
-
 	// Get a reference to the game camera
 	TArray<AActor*> cameras;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("MainCamera"), cameras);
@@ -91,7 +89,6 @@ void AMainGameMode::PostSeamlessTravel()
 	// Spawn Warrior
 	if (characterAssignments["Warrior"] != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning Gauntlet pawn"));
 		AGauntletCharacter* warrior = GetWorld()->SpawnActor<AGauntletCharacter>(WarriorReference, spawnTransforms[0]);
 		APlayerController* warriorController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Warrior"]);
 		warriorController->Possess(warrior);
@@ -102,7 +99,6 @@ void AMainGameMode::PostSeamlessTravel()
 	// Spawn Valkyrie
 	if (characterAssignments["Valkyrie"] != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning Gauntlet pawn"));
 		AGauntletCharacter* valkyrie = GetWorld()->SpawnActor<AGauntletCharacter>(ValkyrieReference, spawnTransforms[1]);
 		APlayerController* valkyrieController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Valkyrie"]);
 		valkyrieController->Possess(valkyrie);
@@ -113,7 +109,6 @@ void AMainGameMode::PostSeamlessTravel()
 	// Spawn Wizard
 	if (characterAssignments["Wizard"] != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning Gauntlet pawn"));
 		AGauntletCharacter* wizard = GetWorld()->SpawnActor<AGauntletCharacter>(WizardReference, spawnTransforms[2]);
 		APlayerController* wizardController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Wizard"]);
 		wizardController->Possess(wizard);
@@ -124,7 +119,6 @@ void AMainGameMode::PostSeamlessTravel()
 	// Spawn Elf
 	if (characterAssignments["Elf"] != -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning Gauntlet pawn"));
 		AGauntletCharacter* elf = GetWorld()->SpawnActor<AGauntletCharacter>(ElfReference, spawnTransforms[3]);
 		APlayerController* elfController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Elf"]);
 		elfController->Possess(elf);

@@ -12,5 +12,5 @@
 void AGauntletGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	DefaultPawnClass = nullptr;
 }
