@@ -8,14 +8,42 @@
 #include "GameFramework/PlayerStart.h"
 #include "CameraManager.h"
 #include "GauntletGameInstance.h"
+#include "GauntletPlayerState.h"
+#include "GauntletPlayerController.h"
 #include "GauntletCharacter.h"
 #include "MainGameMode.h"
 
-/// <summary>
-/// Spawn players and set up the camera
-/// </summary>
-void AMainGameMode::BeginPlay()
+AMainGameMode::AMainGameMode()
 {
+	//PlayerCameraManagerClass = nullptr;
+	PlayerControllerClass = AGauntletPlayerController::StaticClass();
+	PlayerStateClass = AGauntletPlayerState::StaticClass();
+	DefaultPawnClass = nullptr;
+	bUseSeamlessTravel = true;
+
+	// Get a reference to each playable character blueprint
+	static ConstructorHelpers::FClassFinder<AGauntletCharacter> Warrior(TEXT("/Game/Blueprints/BP_Warrior"));
+	WarriorReference = Warrior.Class;
+
+	static ConstructorHelpers::FClassFinder<AGauntletCharacter> Valkyrie(TEXT("/Game/Blueprints/BP_Valkyrie"));
+	ValkyrieReference = Valkyrie.Class;
+
+	static ConstructorHelpers::FClassFinder<AGauntletCharacter> Wizard(TEXT("/Game/Blueprints/BP_Wizard"));
+	WizardReference = Wizard.Class;
+
+	static ConstructorHelpers::FClassFinder<AGauntletCharacter> Elf(TEXT("/Game/Blueprints/BP_Elf"));
+	ElfReference = Elf.Class;
+}
+
+/// <summary>
+/// Spawn players and set up the camera. PostSeamlessTravel is like BeginPlay,
+/// except it delays timing slightly to allow for things from the previous level
+/// to get ready.
+/// </summary>
+void AMainGameMode::PostSeamlessTravel()
+{
+	Super::PostSeamlessTravel();
+
 	// Get a reference to the game camera
 	TArray<AActor*> cameras;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("MainCamera"), cameras);
@@ -53,41 +81,45 @@ void AMainGameMode::BeginPlay()
 
 	// Get character:player pairs
 	UGauntletGameInstance* gameInstance = Cast<UGauntletGameInstance>(GetGameInstance());
-	const TMap<FName, APlayerController*> characterAssignments = gameInstance->GetCharacterAssignments();
+	const TMap<FName, int> characterAssignments = gameInstance->GetCharacterAssignmentMap();
 
 	// Spawn Warrior
-	if (characterAssignments["Warrior"] != nullptr)
+	if (characterAssignments["Warrior"] != -1)
 	{
 		AGauntletCharacter* warrior = GetWorld()->SpawnActor<AGauntletCharacter>(WarriorReference, spawnTransforms[0]);
-		characterAssignments["Warrior"]->Possess(warrior);
-		characterAssignments["Warrior"]->SetViewTarget(mainCamera);
+		APlayerController* warriorController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Warrior"]);
+		warriorController->Possess(warrior);
+		warriorController->SetViewTarget(mainCamera);
 		mainCamera->AddPlayerTarget(warrior);
 	}
 
 	// Spawn Valkyrie
-	if (characterAssignments["Valkyrie"] != nullptr)
+	if (characterAssignments["Valkyrie"] != -1)
 	{
 		AGauntletCharacter* valkyrie = GetWorld()->SpawnActor<AGauntletCharacter>(ValkyrieReference, spawnTransforms[1]);
-		characterAssignments["Valkyrie"]->Possess(valkyrie);
-		characterAssignments["Valkyrie"]->SetViewTarget(mainCamera);
+		APlayerController* valkyrieController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Valkyrie"]);
+		valkyrieController->Possess(valkyrie);
+		valkyrieController->SetViewTarget(mainCamera);
 		mainCamera->AddPlayerTarget(valkyrie);
 	}
 
 	// Spawn Wizard
-	if (characterAssignments["Wizard"] != nullptr)
+	if (characterAssignments["Wizard"] != -1)
 	{
 		AGauntletCharacter* wizard = GetWorld()->SpawnActor<AGauntletCharacter>(WizardReference, spawnTransforms[2]);
-		characterAssignments["Wizard"]->Possess(wizard);
-		characterAssignments["Wizard"]->SetViewTarget(mainCamera);
+		APlayerController* wizardController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Wizard"]);
+		wizardController->Possess(wizard);
+		wizardController->SetViewTarget(mainCamera);
 		mainCamera->AddPlayerTarget(wizard);
 	}
 
 	// Spawn Elf
-	if (characterAssignments["Elf"] != nullptr)
+	if (characterAssignments["Elf"] != -1)
 	{
 		AGauntletCharacter* elf = GetWorld()->SpawnActor<AGauntletCharacter>(ElfReference, spawnTransforms[3]);
-		characterAssignments["Elf"]->Possess(elf);
-		characterAssignments["Elf"]->SetViewTarget(mainCamera);
+		APlayerController* elfController = UGameplayStatics::GetPlayerController(GetWorld(), characterAssignments["Elf"]);
+		elfController->Possess(elf);
+		elfController->SetViewTarget(mainCamera);
 		mainCamera->AddPlayerTarget(elf);
 	}
 }

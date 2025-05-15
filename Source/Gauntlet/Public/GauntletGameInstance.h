@@ -19,11 +19,11 @@ class GAUNTLET_API UGauntletGameInstance : public UGameInstance
 	
 public:
 	virtual void Init() override;
-	const TMap<FName, APlayerController*>& GetCharacterAssignments() const;
-	bool AddCharacterAssignment(FName, APlayerController*);
+	const TMap<FName, int>& GetCharacterAssignmentMap() const;
+	TArray<FString> GetAssignedPlayers();
+	bool AddCharacterAssignment(FName, int);
 
 private:
-	TMap<FName, APlayerController*> CharacterAssignments;
-	TMap<APlayerController*, FName> AssignedCharacters;
-
+	TMap<FName, int> CharacterAssignments;
+	TMap<int, FName> AssignedCharacters;
 };

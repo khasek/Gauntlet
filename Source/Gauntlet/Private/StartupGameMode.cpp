@@ -16,6 +16,9 @@ AStartupGameMode::AStartupGameMode()
 {
 	PlayerControllerClass = AGauntletPlayerController::StaticClass();
 	PlayerStateClass = AGauntletPlayerState::StaticClass();
+	DefaultPawnClass = nullptr;
+	bUseSeamlessTravel = true;
+
 }
 
 /// <summary>

@@ -14,15 +14,23 @@
 void AGauntletPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	playerID = UGameplayStatics::GetPlayerControllerID(this); // cleaner reference
 	gameInstance = Cast<UGauntletGameInstance>(GetGameInstance());
 
-	// Enable both cursor and button input
-	SetInputMode(FInputModeGameAndUI());
+	// Set up input for character selection
+	if (GetWorld()->GetName() == "CharacterSelect")
+	{
+		// Enable both cursor and button input
+		SetInputMode(FInputModeGameAndUI());
 
-	// Set up selection screen input
-	EnableInput(this);
-	SetupInputComponent();
+		bShowMouseCursor = true;
+		//bEnableClickEvents = true;
+		//bEnableMouseOverEvents = true;
+
+		// Set up selection screen input
+		EnableInput(this);
+		SetupInputComponent();
+	}
 }
 
 /// <summary>
@@ -52,9 +60,9 @@ void AGauntletPlayerController::FreezeCharacterSelection()
 /// </summary>
 void AGauntletPlayerController::SelectWarrior()
 {
-	if (gameInstance->AddCharacterAssignment("Warrior", this))
+	if (gameInstance->AddCharacterAssignment(FName("Warrior"), playerID))
 	{
-		WarriorSelected.Broadcast(UGameplayStatics::GetPlayerControllerID(this));
+		CharacterSelected.Broadcast(gameInstance->GetAssignedPlayers());
 	}
 }
 
@@ -63,9 +71,9 @@ void AGauntletPlayerController::SelectWarrior()
 /// </summary>
 void AGauntletPlayerController::SelectValkyrie()
 {
-	if (gameInstance->AddCharacterAssignment("Valkyrie", this))
+	if (gameInstance->AddCharacterAssignment(FName("Valkyrie"), playerID))
 	{
-		ValkyrieSelected.Broadcast(UGameplayStatics::GetPlayerControllerID(this));
+		CharacterSelected.Broadcast(gameInstance->GetAssignedPlayers());
 	}
 }
 
@@ -74,9 +82,9 @@ void AGauntletPlayerController::SelectValkyrie()
 /// </summary>
 void AGauntletPlayerController::SelectWizard()
 {
-	if (gameInstance->AddCharacterAssignment("Wizard", this))
+	if (gameInstance->AddCharacterAssignment(FName("Wizard"), playerID))
 	{
-		WizardSelected.Broadcast(UGameplayStatics::GetPlayerControllerID(this));
+		CharacterSelected.Broadcast(gameInstance->GetAssignedPlayers());
 	}
 }
 
@@ -85,8 +93,8 @@ void AGauntletPlayerController::SelectWizard()
 /// </summary>
 void AGauntletPlayerController::SelectElf()
 {
-	if (gameInstance->AddCharacterAssignment("Elf", this))
+	if (gameInstance->AddCharacterAssignment(FName("Elf"), playerID))
 	{
-		ElfSelected.Broadcast(UGameplayStatics::GetPlayerControllerID(this));
+		CharacterSelected.Broadcast(gameInstance->GetAssignedPlayers());
 	}
 }
