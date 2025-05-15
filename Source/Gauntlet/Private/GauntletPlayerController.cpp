@@ -24,8 +24,6 @@ void AGauntletPlayerController::BeginPlay()
 		SetInputMode(FInputModeGameAndUI());
 
 		bShowMouseCursor = true;
-		//bEnableClickEvents = true;
-		//bEnableMouseOverEvents = true;
 
 		// Set up selection screen input
 		EnableInput(this);
