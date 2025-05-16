@@ -1,4 +1,8 @@
-// Inventory for playable characters
+/*******************************************************************************
+* InventoryComponent manages inventory space for player characters.
+* 
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #pragma once
 
@@ -6,6 +10,8 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnKeyUpdate, FString, character, int, currentKeys);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPotionUpdate, FString, character, int, currentPotions);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAUNTLET_API UInventoryComponent : public UActorComponent
@@ -13,16 +19,27 @@ class GAUNTLET_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UInventoryComponent();
 
+	bool AddKey();
+	bool RemoveKey();
+	void SetKeys(int amount);
+
+	bool AddPotion();
+	bool RemovePotion();
+	void SetPotions(int amount);
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnKeyUpdate NumKeysChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnPotionUpdate NumPotionsChanged;
+
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+	FString playerCharacter; // Warrior, etc.
+	int maxItems = 12;
+	int numKeys = 0;
+	int numPotions = 0;
 };
