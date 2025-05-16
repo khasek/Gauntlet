@@ -32,6 +32,7 @@ void APlayerProjectile::Tick(float DeltaTime)
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor && HitActor->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass())) {
 			IBPI_TakeDamage::Execute_ApplyDamage(HitActor, Damage);
+			//UE_LOG(LogTemp, Warning, TEXT("DamageDealt"));
 		}
 		Destroy();
 	}
