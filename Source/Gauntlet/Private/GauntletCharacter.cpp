@@ -107,6 +107,7 @@ void AGauntletCharacter::Shoot()
 	//FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 50;
 	//FRotator SpawnRotation = GetActorRotation();
 	FVector SpawnLocation = GetActorLocation() + shootDirection * 50;
+	SpawnLocation.Z = GetActorLocation().Z / 2;
 	FRotator SpawnRotation = shootDirection.Rotation();
 	SpawnRotation.Pitch += 90.0f;
 
