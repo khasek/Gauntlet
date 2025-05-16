@@ -30,6 +30,7 @@ bool UInventoryComponent::AddKey()
 	{
 		numKeys++;
 		NumKeysChanged.Broadcast(playerCharacter, numKeys);
+		UE_LOG(LogTemp, Warning, TEXT("Number of keys increased to %d"), numKeys);
 		return true;
 	}
 	return false;
@@ -45,6 +46,7 @@ bool UInventoryComponent::RemoveKey()
 	{
 		numKeys--;
 		NumKeysChanged.Broadcast(playerCharacter, numKeys);
+		UE_LOG(LogTemp, Warning, TEXT("Number of keys decreased to %d"), numKeys);
 		return true;
 	}
 	return false;
@@ -72,6 +74,7 @@ bool UInventoryComponent::AddPotion()
 	{
 		numPotions++;
 		NumPotionsChanged.Broadcast(playerCharacter, numPotions);
+		UE_LOG(LogTemp, Warning, TEXT("Number of potions increased to %d"), numPotions);
 		return true;
 	}
 	return false;
@@ -87,6 +90,7 @@ bool UInventoryComponent::RemovePotion()
 	{
 		numPotions--;
 		NumPotionsChanged.Broadcast(playerCharacter, numPotions);
+		UE_LOG(LogTemp, Warning, TEXT("Number of potions decreased to %d"), numPotions);
 		return true;
 	}
 	return false;

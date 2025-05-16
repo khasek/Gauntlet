@@ -1,34 +1,24 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+/*******************************************************************************
+* ScoreComponent handles player score updates
+*
+* Author: Kendal Hasek
+*******************************************************************************/
 
 #include "ScoreComponent.h"
 
-// Sets default values for this component's properties
+
 UScoreComponent::UScoreComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-
-// Called when the game starts
-void UScoreComponent::BeginPlay()
+/// <summary>
+/// Update the player's score
+/// </summary>
+/// <param name="amount">New points to add</param>
+void UScoreComponent::IncreaseScore(int amount)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	score += amount;
+	ScoreUpdated.Broadcast(playerCharacter, score);
+	UE_LOG(LogTemp, Warning, TEXT("Player score increased! Score is now %d"), score);
 }
-
-
-// Called every frame
-void UScoreComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-

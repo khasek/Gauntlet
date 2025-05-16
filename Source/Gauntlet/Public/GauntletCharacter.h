@@ -26,9 +26,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Note: These need to be pointers (Unreal will crash if they aren't)
-	UPlayerHealthComponent* healthComponent;
-	UScoreComponent* scoreComponent;
-	UInventoryComponent* inventoryComponent;
+	//UPlayerHealthComponent* healthComponent;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UScoreComponent* ScoreComponent;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UInventoryComponent* InventoryComponent;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

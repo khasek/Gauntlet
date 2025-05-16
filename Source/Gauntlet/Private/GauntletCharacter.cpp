@@ -11,6 +11,8 @@ AGauntletCharacter::AGauntletCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	ScoreComponent = CreateDefaultSubobject<UScoreComponent>(TEXT("ScoreComponent"));
 }
 
 // Called when the game starts or when spawned
