@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BPI_TakeDamage.h"
+#include "Kismet/GameplayStatics.h"
 #include "FireballHandling.generated.h"
 
 UCLASS()
