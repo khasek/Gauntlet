@@ -47,143 +47,162 @@ void UEightDirectionChaseComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 	//Handles movement for the lobber, who runs away if the player is too close0
 	if (lobberMovement) {
-
+		rockTimer += DeltaTime;
 		if (Target) {
 			FVector awayVector = Owner->GetActorLocation() - Target->GetActorLocation();
 			awayVector.Z = 0;
 
 			float distance = awayVector.Size();
 
-			if (distance < lobberRunDistance) {
-				FVector Dir = Get8DirectionVector(awayVector);
-				FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
+			if (distance <= lobberAttackDistance) {
+				printf("Player in range");
+				if (rockTimer >= 3.0f) {
+					rockTimer = 0.0f;
+					FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
+					FRotator SpawnRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
 
-				FHitResult hit;
-
-				Owner->SetActorLocation(NewLocation, true, &hit);
-
-				if (!awayVector.IsNearlyZero()) {
-					FRotator LookAtRotation = (-awayVector).Rotation();
-					Owner->SetActorRotation(LookAtRotation);
-				}
-			}
-		}
-
-		return;
-	}
-
-	//Scuffed Sorcerer code, the opacity doesn't changing doesn't work but it was attempted
-	if (sorcMovement) {
-		//UE_LOG(LogTemp, Warning, TEXT("sorcMovement Reached"));
-		blinkTimer += DeltaTime;
-
-		if (blinkTimer >= blinkInterval && !phasingOut) {
-			phasingOut = true;
-			blinkFadeTimer = 0.0f;
-			//UE_LOG(LogTemp, Warning, TEXT("Phasing set to true"));
-		}
-
-		if (phasingOut && HasLineOfSight(Target)) {
-			blinkFadeTimer += DeltaTime;
-
-			float Opacity = FMath::Lerp(1.0f, 0.0f, blinkFadeTimer / blinkFadeDuration);
-			
-			//SetOwnerOpacity(Opacity);
-			//UE_LOG(LogTemp, Warning, TEXT("Opacity setting reached"));
-			if (blinkFadeTimer >= blinkFadeDuration && !invisible) {
-				Target = FindNearestPlayer();
-				if (Target && HasLineOfSight(Target)) {
-					FVector Dir = (Target->GetActorLocation() - Owner->GetActorLocation());
-					float dist = Dir.Size();
-					Dir = Dir.GetSafeNormal2D();
-					if (dist < blinkDistance) {
-						blinkDistance = dist - 100;
-						
+					FActorSpawnParameters SpawnParams;
+					ALobberRockHandler* Rock = GetWorld()->SpawnActor<ALobberRockHandler>(RockClass, SpawnLocation, SpawnRotation, SpawnParams);
+					if (Rock) {
+						FVector Direction = Target->GetActorLocation() - SpawnLocation;
+						Rock->Init(Direction);
 					}
-					if (blinkDistance < 100)
-						blinkDistance = 0;
-					
-
-					FVector blinkLocation = Owner->GetActorLocation() + Dir * blinkDistance;
-
-					Owner->SetActorLocation(blinkLocation, true);
+					if (!Rock) {
+						UE_LOG(LogTemp, Error, TEXT("Failed to spawn Lobber rock!"));
+					}
 				}
-				//UE_LOG(LogTemp, Warning, TEXT("Opacity: %f"), Opacity);
-				invisible = true;
+
+				if (distance < lobberRunDistance) {
+					FVector Dir = Get8DirectionVector(awayVector);
+					FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
+
+					FHitResult hit;
+
+					Owner->SetActorLocation(NewLocation, true, &hit);
+
+					if (!awayVector.IsNearlyZero()) {
+						FRotator LookAtRotation = (-awayVector).Rotation();
+						Owner->SetActorRotation(LookAtRotation);
+					}
+				}
+			}
+
+			return;
+		}
+
+		//Scuffed Sorcerer code, the opacity doesn't changing doesn't work but it was attempted
+		if (sorcMovement) {
+			//UE_LOG(LogTemp, Warning, TEXT("sorcMovement Reached"));
+			blinkTimer += DeltaTime;
+
+			if (blinkTimer >= blinkInterval && !phasingOut) {
+				phasingOut = true;
 				blinkFadeTimer = 0.0f;
+				//UE_LOG(LogTemp, Warning, TEXT("Phasing set to true"));
 			}
-			else if (invisible && blinkFadeTimer >= blinkFadeDuration){
 
-				phasingOut = false;
-				invisible = false;
-				blinkTimer = 0.0f;
-				
-			}
-			else if (invisible) {
+			if (phasingOut && HasLineOfSight(Target)) {
 				blinkFadeTimer += DeltaTime;
-				Opacity = FMath::Lerp(0.0f, 1.0f, blinkFadeTimer / blinkFadeDuration);
+
+				float Opacity = FMath::Lerp(1.0f, 0.0f, blinkFadeTimer / blinkFadeDuration);
+
 				//SetOwnerOpacity(Opacity);
-			}
-		}
-		blinkDistance = 600.0f;
-		return;
-	}
+				//UE_LOG(LogTemp, Warning, TEXT("Opacity setting reached"));
+				if (blinkFadeTimer >= blinkFadeDuration && !invisible) {
+					Target = FindNearestPlayer();
+					if (Target && HasLineOfSight(Target)) {
+						FVector Dir = (Target->GetActorLocation() - Owner->GetActorLocation());
+						float dist = Dir.Size();
+						Dir = Dir.GetSafeNormal2D();
+						if (dist < blinkDistance) {
+							blinkDistance = dist - 100;
 
-	//Handles movement and shooting for demons, who stop to shoot when they have LOS
-	if (demonMovement) {
-		fireballTimer += DeltaTime;
-		if (HasLineOfSight(Target)) {
-			shooting = true;
-			if (fireballTimer >= 3.0f) {
-				fireballTimer = 0.0f;
-				FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
-				FRotator SpawnRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
+						}
+						if (blinkDistance < 100)
+							blinkDistance = 0;
 
-				FActorSpawnParameters SpawnParams;
-				AFireballHandling* Fireball = GetWorld()->SpawnActor<AFireballHandling>(FireballClass, SpawnLocation, SpawnRotation, SpawnParams);
-				if (Fireball) {
-					FVector Direction = Target->GetActorLocation() - SpawnLocation;
-					Fireball->Init(Direction);
+
+						FVector blinkLocation = Owner->GetActorLocation() + Dir * blinkDistance;
+
+						Owner->SetActorLocation(blinkLocation, true);
+					}
+					//UE_LOG(LogTemp, Warning, TEXT("Opacity: %f"), Opacity);
+					invisible = true;
+					blinkFadeTimer = 0.0f;
+				}
+				else if (invisible && blinkFadeTimer >= blinkFadeDuration) {
+
+					phasingOut = false;
+					invisible = false;
+					blinkTimer = 0.0f;
+
+				}
+				else if (invisible) {
+					blinkFadeTimer += DeltaTime;
+					Opacity = FMath::Lerp(0.0f, 1.0f, blinkFadeTimer / blinkFadeDuration);
+					//SetOwnerOpacity(Opacity);
 				}
 			}
+			blinkDistance = 600.0f;
+			return;
 		}
-		else
-			shooting = false;
-	}
 
-	//Base movement script, tries to move towards player at all times
-	if (Target && !shooting) {
-		FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
-		ToTarget.Z = 0.0f; // ensure 2D movement only
+		//Handles movement and shooting for demons, who stop to shoot when they have LOS
+		if (demonMovement) {
+			fireballTimer += DeltaTime;
+			if (HasLineOfSight(Target)) {
+				shooting = true;
+				if (fireballTimer >= 3.0f) {
+					fireballTimer = 0.0f;
+					FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
+					FRotator SpawnRotation = (Target->GetActorLocation() - Owner->GetActorLocation()).Rotation();
 
-		float Distance = ToTarget.Size(); 
-
-		if (Distance > StopDistance)
-		{
-			FVector Dir = Get8DirectionVector(ToTarget);
-			FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
-			FHitResult Hit;
-			Owner->SetActorLocation(NewLocation, true, &Hit);
-
-			if (Hit.bBlockingHit)
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Hit.GetActor()->GetName());
-				//if (Hit.GetActor()->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass()))
-				//{
-				//	// Trigger melee logic here
-				//	UE_LOG(LogTemp, Warning, TEXT("Hit the player!"));
-				//}
+					FActorSpawnParameters SpawnParams;
+					AFireballHandling* Fireball = GetWorld()->SpawnActor<AFireballHandling>(FireballClass, SpawnLocation, SpawnRotation, SpawnParams);
+					if (Fireball) {
+						FVector Direction = Target->GetActorLocation() - SpawnLocation;
+						Fireball->Init(Direction);
+					}
+				}
 			}
-			
-
-			//Owner->SetActorLocation(NewLocation, true, &Hit);
-			//Owner->SetActorLocation(NewLocation);
+			else
+				shooting = false;
 		}
 
-		if (!ToTarget.IsNearlyZero())
-		{
-			FRotator LookAtRotation = ToTarget.Rotation();
-			Owner->SetActorRotation(LookAtRotation);
+		//Base movement script, tries to move towards player at all times
+		if (Target && !shooting) {
+			FVector ToTarget = Target->GetActorLocation() - Owner->GetActorLocation();
+			ToTarget.Z = 0.0f; // ensure 2D movement only
+
+			float Distance = ToTarget.Size();
+
+			if (Distance > StopDistance)
+			{
+				FVector Dir = Get8DirectionVector(ToTarget);
+				FVector NewLocation = Owner->GetActorLocation() + Dir * movementSpeed * DeltaTime;
+				FHitResult Hit;
+				Owner->SetActorLocation(NewLocation, true, &Hit);
+
+				if (Hit.bBlockingHit)
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *Hit.GetActor()->GetName());
+					//if (Hit.GetActor()->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass()))
+					//{
+					//	// Trigger melee logic here
+					//	UE_LOG(LogTemp, Warning, TEXT("Hit the player!"));
+					//}
+				}
+
+
+				//Owner->SetActorLocation(NewLocation, true, &Hit);
+				//Owner->SetActorLocation(NewLocation);
+			}
+
+			if (!ToTarget.IsNearlyZero())
+			{
+				FRotator LookAtRotation = ToTarget.Rotation();
+				Owner->SetActorRotation(LookAtRotation);
+			}
 		}
 	}
 }

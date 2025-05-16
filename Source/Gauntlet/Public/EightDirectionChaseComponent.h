@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "FireballHandling.h"
+#include "LobberRockHandler.h"
 #include "EightDirectionChaseComponent.generated.h"
 
 
@@ -31,6 +32,8 @@ public:
 	float movementSpeed = 200.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float lobberRunDistance = 300.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float lobberAttackDistance = 800.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool lobberMovement = false;
 
@@ -65,10 +68,16 @@ public:
 	float fireballTimer = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float rockTimer = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool shooting = false;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Fireball")
 	TSubclassOf<AFireballHandling> FireballClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Rock")
+	TSubclassOf<ALobberRockHandler> RockClass;
 
 	UFUNCTION(BlueprintCallable, Category = "EnemyAI")
 	bool HasLineOfSight(AActor* Target);
