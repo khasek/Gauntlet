@@ -23,6 +23,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnScoreUpdate ScoreUpdated;
 
+	UFUNCTION(BlueprintCallable)
 	void IncreaseScore(int amount);
 
 protected:
