@@ -27,7 +27,7 @@ public:
 	void Init(const FVector& Direction);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerCombat")
-	float Damage = 10.f;
+	float Damage = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerCombat")
 	float Speed = 1000.f;
