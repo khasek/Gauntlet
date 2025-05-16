@@ -34,6 +34,9 @@ void AFireballHandling::Tick(float DeltaTime)
 		if (HitActor && HitActor->GetClass()->ImplementsInterface(UBPI_TakeDamage::StaticClass())) {
 			IBPI_TakeDamage::Execute_ApplyDamage(HitActor, 10);
 		}
+		if (HitActor->ActorHasTag("Player")) {
+			UGameplayStatics::ApplyDamage(HitActor, 10, nullptr, this, UDamageType::StaticClass());
+		}
 		
 
 		Destroy();
