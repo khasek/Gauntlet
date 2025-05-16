@@ -21,7 +21,7 @@ public:
 	virtual void PostSeamlessTravel() override;
 
 	UFUNCTION(BlueprintCallable)
-	void NextLevel(FName levelName);
+	void NextLevel(FString levelName);
 
 private:
 	TSubclassOf<AGauntletCharacter> WarriorReference;

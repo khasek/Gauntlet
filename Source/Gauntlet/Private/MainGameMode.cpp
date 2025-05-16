@@ -130,7 +130,8 @@ void AMainGameMode::PostSeamlessTravel()
 /// <summary>
 /// Load the next level
 /// </summary>
-void AMainGameMode::NextLevel(FName levelName)
+void AMainGameMode::NextLevel(FString levelName)
 {
-	UGameplayStatics::OpenLevel(this, levelName, true);
+	//UGameplayStatics::OpenLevel(this, levelName, true);
+	GetWorld()->GetFirstPlayerController()->ClientTravel(levelName, TRAVEL_Relative, true);
 }
